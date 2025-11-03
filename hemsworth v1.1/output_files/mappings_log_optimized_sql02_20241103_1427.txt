@@ -1,0 +1,94 @@
+DELTA LAKE MAPPINGS LOG - OPTIMIZED SQL02 QUERY
+Generated: November 3, 2024 2:27 PM
+Source: Optimized Online Performance Query (SQL02)
+
+=== OPTIMIZATION SUMMARY ===
+Applied AGENTS.md best practices for performance and readability:
+✅ SARGable WHERE conditions (no functions on columns)
+✅ Optimized JOIN order (smallest table first)
+✅ Early filtering in JOIN conditions
+✅ Replaced <> with != for consistency
+✅ Used INTERVAL syntax instead of date_sub() functions
+✅ Consolidated similar CASE conditions with IN clauses
+✅ Removed unnecessary ROUND() functions in calculations
+✅ Added comprehensive comments for maintainability
+✅ Proper table aliases throughout
+✅ Removed LIMIT for production use
+
+=== TABLE MAPPINGS (CONFIRMED) ===
+core_views.sportsbook.bet_legs -> [CONFIRMED - Main fact table]
+service.ml.cd_fd_risk_features_union -> [CONFIRMED - Risk features]
+dates_online -> [CONFIRMED - Temporary view from previous step]
+
+=== TABLE MAPPINGS (UPDATED) ===
+[ANALYST_RT_BR_SB_GROUPINGS_PLACEHOLDER] -> [MISSING - Sport groupings lookup]
+[FDG_FACT_OB_ACCOUNT_CATEGORISATION_USER_PLACEHOLDER] -> UNION of:
+  - core_views.sportsbook.customer_risk_user_profiles_us
+  - core_views.sportsbook_can.customer_risk_user_profiles_can
+
+=== REMAINING MISSING MAPPINGS ===
+[ANALYST_RT_BR_SB_GROUPINGS_PLACEHOLDER] -> [MISSING - Sport groupings lookup]
+
+=== COLUMN MAPPINGS APPLIED ===
+Original -> Optimized:
+- bl.[SGPP_YN_PLACEHOLDER] -> bl.is_sgpp
+- bl.[FREE_BET_USED_PLACEHOLDER] -> bl.leg_bonus_bet_used_amount
+- bl.[IS_PROFIT_BOOST_PLACEHOLDER] -> bl.is_profit_boost
+- bl.[GROSS_GAMING_REVENUE_TRADING_USD_PLACEHOLDER] -> bl.leg_gross_gaming_revenue_trading_amount
+- bl.[IS_TEST_ACCOUNT_PLACEHOLDER] -> bl.is_test_account
+- bl.[EVENT_IN_PLAY_COLUMN_PLACEHOLDER] -> bl.is_event_in_play
+
+=== PERFORMANCE OPTIMIZATIONS APPLIED ===
+
+1. **SARGable Conditions**:
+   - Changed: WHERE bl.bet_last_settled_local_ts >= date_sub(current_date(), 90)
+   - To: WHERE bl.bet_last_settled_local_ts >= current_date() - INTERVAL 90 DAYS
+
+2. **JOIN Order Optimization**:
+   - Start with dates_online (smallest table)
+   - Apply main filters in JOIN condition for early filtering
+   - Move partition filter to JOIN condition
+
+3. **CASE Statement Optimization**:
+   - Consolidated multiple sport name conditions using IN clauses
+   - Removed redundant lower() functions where possible
+   - Used != instead of <> for consistency
+
+4. **Date Function Optimization**:
+   - Replaced date_sub() with INTERVAL syntax
+   - Pre-calculated minute intervals instead of using multiplication
+
+5. **Aggregation Optimization**:
+   - Used BETWEEN for range conditions
+   - Simplified complex CASE structures
+   - Removed unnecessary ROUND() in intermediate calculations
+
+=== DATABRICKS-SPECIFIC FEATURES USED ===
+- GROUP BY ALL (Databricks-specific syntax)
+- INTERVAL syntax for date arithmetic
+- Delta Lake table references
+- Proper NULL handling with NULLIF()
+
+=== RECOMMENDED NEXT STEPS ===
+1. Create indexes on frequently filtered columns:
+   - bl.bet_last_settled_local_ts (partition column)
+   - bl.bet_status_code
+   - bl.location_code
+   - bl.bet_result
+
+2. Consider partitioning strategy:
+   - Partition by date (bet_last_settled_local_ts)
+   - Z-ORDER by location_code, betting_platform
+
+3. Apply OPTIMIZE command after data load:
+   OPTIMIZE sandbox.shared.br_temp_sbk_performance_online
+   ZORDER BY (settled_day_local, location_code, betting_platform);
+
+4. Monitor query performance with EXPLAIN ANALYZE
+
+=== MIGRATION NOTES ===
+- Query now follows all AGENTS.md best practices
+- Removed LIMIT 1000 for production use
+- Added comprehensive comments for analyst maintainability
+- Optimized for Databricks Delta Lake performance
+- Ready for production deployment after placeholder table mappings are resolved
