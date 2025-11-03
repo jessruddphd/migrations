@@ -1,0 +1,41 @@
+DELTA LAKE MAPPINGS LOG - SQL_02
+Generated: November 3, 2024 11:17 AM
+Source: Complex Performance Query Migration
+
+=== TABLE MAPPINGS ===
+fdg.fact_sb_gameplay -> core_views.sportsbook.bet_legs
+analyst_rt_staging.br_temp_sbk_performance_online -> [MISSING MAPPING - PLACEHOLDER NEEDED]
+analyst_rt.br_sb_groupings -> [MISSING MAPPING - PLACEHOLDER NEEDED]
+analyst_rt.cd_fd_risk_features -> [MISSING MAPPING - PLACEHOLDER NEEDED]
+fdg.fact_ob_account_categorisation_user -> [MISSING MAPPING - PLACEHOLDER NEEDED]
+
+=== COLUMN MAPPINGS (fdg.fact_sb_gameplay) ===
+fdg.fact_sb_gameplay.source -> core_views.sportsbook.bet_legs.betting_platform
+fdg.fact_sb_gameplay.state -> core_views.sportsbook.bet_legs.location_code
+fdg.fact_sb_gameplay.bet_settled_date -> core_views.sportsbook.bet_legs.bet_last_settled_ts
+fdg.fact_sb_gameplay.bet_settled_date_local -> core_views.sportsbook.bet_legs.bet_last_settled_local_ts
+fdg.fact_sb_gameplay.sport_name -> core_views.sportsbook.bet_legs.leg_sport_name_reporting
+fdg.fact_sb_gameplay.competition_name -> core_views.sportsbook.bet_legs.leg_competition_name_reporting
+fdg.fact_sb_gameplay.event_name -> core_views.sportsbook.bet_legs.leg_event_name_reporting
+fdg.fact_sb_gameplay.market_name -> core_views.sportsbook.bet_legs.leg_market_name_openbet
+fdg.fact_sb_gameplay.bet_status -> core_views.sportsbook.bet_legs.bet_status_code
+fdg.fact_sb_gameplay.bet_result -> core_views.sportsbook.bet_legs.bet_result
+fdg.fact_sb_gameplay.gross_stake -> core_views.sportsbook.bet_legs.leg_gross_stake_amount
+fdg.fact_sb_gameplay.ggr -> core_views.sportsbook.bet_legs.leg_gross_gaming_revenue_amount
+
+=== MISSING MAPPINGS ===
+- analyst_rt_staging schema not found in mapping
+- analyst_rt schema not found in mapping  
+- fdg.fact_ob_account_categorisation_user table not found
+- Multiple performance-related columns need individual lookup
+
+=== DATABRICKS CONVERSION NOTES ===
+- TRUNCATE statement needs conversion to DELETE FROM or DROP TABLE
+- DATEADD function -> date_add() or interval arithmetic
+- DATEDIFF function -> datediff() with different syntax
+- TRUNC(SYSDATE) -> current_date()
+- NVL function -> coalesce() or nvl()
+- ILIKE operator -> LIKE with UPPER() or regexp_like()
+- VARCHAR casting -> STRING type
+- Timezone conversions need Databricks format
+- Complex CASE statements may need restructuring

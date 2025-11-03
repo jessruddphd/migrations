@@ -1,0 +1,50 @@
+DELTA LAKE MAPPINGS LOG - DATABRICKS NOTEBOOK
+Generated: November 3, 2024 11:23 AM
+Source: Sportsbook Risk Tasks Notebook Migration
+
+=== NOTEBOOK STRUCTURE ===
+- Python Setup: Import libraries, parameters, Redshift connection
+- SQL Queries: 16 sequential SQL blocks (sql_00 to sql_16)
+- Execution: Sequential processing with progress logging
+- Optimization: Table analysis commands
+- Reporting: Slack notifications
+
+=== TABLE MAPPINGS (CONFIRMED) ===
+fdg.fact_sb_gameplay -> core_views.sportsbook.bet_legs
+fdg.fact_sb_gameplay_retail -> core_views.sportsbook_retail.gameplay_legs
+fdg.fact_sb_gameplay_can -> core_views.sportsbook_can.bet_legs
+
+=== MISSING TABLE MAPPINGS ===
+analyst_rt_staging.br_temp_sbk_performance_online -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt_staging.br_temp_sbk_performance_retail -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt_staging.br_temp_sbk_performance_canada -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt_staging.br_temp_sbk_performance_union -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt_staging.br_temp_sbk_performance_aggregated -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt_staging.br_temp_sbk_performance_high_level -> [MISSING - PLACEHOLDER NEEDED]
+
+analyst_rt.br_sb_groupings -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt.cd_fd_risk_features -> service.ml.cd_fd_risk_features_union
+analyst_rt.cl_fd_risk_features_can -> service.ml.cd_fd_risk_features_union
+analyst_rt.sbk_performance_daily -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt.sbk_performance_last_15m -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt.sbk_performance_high_level -> [MISSING - PLACEHOLDER NEEDED]
+analyst_rt.br_table_update_times -> [MISSING - PLACEHOLDER NEEDED]
+
+=== DATABRICKS MIGRATION NOTES ===
+- Replace Redshift connection with Databricks SQL
+- Convert temporary tables (#table) to temporary views
+- Update date functions: TRUNC(SYSDATE) -> current_date()
+- Convert DATEADD/DATEDIFF to Databricks equivalents
+- Replace NVL with coalesce()
+- Update ILIKE to LIKE with lower()
+- Convert VARCHAR casting to STRING
+- Replace Redshift-specific functions
+- Update TRUNCATE/INSERT patterns for Delta Lake
+- Modify table optimization commands for Delta Lake
+
+=== PYTHON MIGRATION NOTES ===
+- Replace redshift.RedshiftUtility with Databricks SQL connector
+- Update connection parameters for Databricks
+- Modify SQL execution pattern for Databricks
+- Update table analysis commands for Delta Lake
+- Maintain Slack reporting functionality
