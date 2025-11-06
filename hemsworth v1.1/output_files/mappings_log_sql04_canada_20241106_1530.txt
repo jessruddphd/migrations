@@ -1,0 +1,178 @@
+DELTA LAKE MAPPINGS LOG - SQL04 CANADA QUERY
+Generated: November 6, 2024 3:30 PM
+Source: Sportsbook Canada Performance Query (SQL04)
+
+=== OPTIMIZATION SUMMARY ===
+Applied AGENTS.md best practices for performance and readability:
+✅ SARGable WHERE conditions (no functions on columns)
+✅ Optimized JOIN order (smallest table first)
+✅ Early filtering in JOIN conditions
+✅ Replaced <> with != for consistency
+✅ Used INTERVAL syntax instead of date_sub() functions
+✅ Consolidated similar CASE conditions with IN clauses
+✅ Removed unnecessary ROUND() functions in calculations
+✅ Added comprehensive comments for maintainability
+✅ Proper table aliases throughout
+✅ Removed LIMIT for production use
+
+=== TABLE MAPPINGS (CONFIRMED) ===
+fdg.fact_sb_gameplay_can -> core_views.sportsbook_can.bet_legs [CONFIRMED]
+dates_canada -> [CONFIRMED - Temporary view from SQL01, DEPENDENCY REQUIRED]
+
+=== MISSING TABLE MAPPINGS ===
+analyst_rt.br_sb_groupings -> [ANALYST_RT_BR_SB_GROUPINGS_PLACEHOLDER] [MISSING - Sport groupings lookup]
+analyst_rt.cl_fd_risk_features_can -> [ANALYST_RT_CL_FD_RISK_FEATURES_CAN_PLACEHOLDER] [MISSING - Canada risk features]
+
+=== COLUMN MAPPINGS APPLIED ===
+Original Redshift -> Delta Lake:
+- bet_legs.source -> bl.source
+- bet_legs.state -> bl.state
+- bet_legs.bet_settled_date -> bl.bet_settled_date
+- bet_legs.bet_settled_date_local -> bl.bet_settled_date_local
+- bet_legs.sport_name -> bl.sport_name
+- bet_legs.competition_name -> bl.competition_name
+- bet_legs.event_name -> bl.event_name
+- bet_legs.event_start_date -> bl.event_start_date
+- bet_legs.market_name -> bl.market_name
+- bet_legs.handicap_value -> bl.handicap_value
+- bet_legs.selection_name -> bl.selection_name
+- bet_legs.event_id -> bl.event_id
+- bet_legs.market_id -> bl.market_id
+- bet_legs.selection_id -> bl.selection_id
+- bet_legs.event_in_play -> bl.event_in_play
+- bet_legs.bet_placed_date -> bl.bet_placed_date
+- bet_legs.bet_type -> bl.bet_type
+- bet_legs.leg_numbers -> bl.leg_numbers
+- bet_legs.price_type_code -> bl.price_type_code
+- bet_legs.sgpp_yn -> bl.sgpp_yn [CANADA-SPECIFIC]
+- bet_legs.bet_cashed_out -> bl.bet_cashed_out
+- bet_legs.leg_price_decimal -> bl.leg_price_decimal
+- bet_legs.bet_percent_max_bet -> bl.bet_percent_max_bet
+- bet_legs.free_bet_used -> bl.free_bet_used [CANADA-SPECIFIC]
+- bet_legs.is_profit_boost -> bl.is_profit_boost [CANADA HAS PROFIT BOOST]
+- bet_legs.bet_stake_factor -> bl.bet_stake_factor
+- bet_legs.bet_count -> bl.bet_count
+- bet_legs.gross_stake -> bl.gross_stake
+- bet_legs.ggr -> bl.ggr
+- bet_legs.gross_gaming_revenue_trading_cad -> bl.gross_gaming_revenue_trading_cad [CANADA-SPECIFIC]
+- bet_legs.bet_price_actual -> bl.bet_price_actual
+- bet_legs.bet_price_unboosted -> bl.bet_price_unboosted
+- bet_legs.bet_status -> bl.bet_status
+- bet_legs.bet_result -> bl.bet_result
+- bet_legs.is_test_account -> bl.is_test_account
+
+=== CANADA-SPECIFIC DIFFERENCES FROM US/RETAIL ===
+
+1. **Source Table**:
+   - US Online: core_views.sportsbook.bet_legs
+   - US Retail: core_views.sportsbook_retail.gameplay_legs
+   - Canada: core_views.sportsbook_can.bet_legs
+
+2. **Business Logic Differences**:
+   - **Channel**: 'Canada Online' (no retail operations)
+   - **Shop/Retail Fields**: All empty (online only)
+   - **Free Bet Logic**: Uses `free_bet_used` (like US online `leg_bonus_bet_used_amount`)
+   - **Profit Boost**: Canada HAS profit boost feature (unlike retail)
+   - **SGP+ Logic**: Uses `sgpp_yn` instead of `is_same_game_parlay_plus`
+   - **Revenue**: Has separate CAD trading revenue (`gross_gaming_revenue_trading_cad`)
+   - **Test Account Filter**: Explicit `is_test_account = FALSE` in WHERE clause
+
+3. **Risk Features Table**:
+   - US: service.ml.cd_fd_risk_features_union
+   - Canada: [ANALYST_RT_CL_FD_RISK_FEATURES_CAN_PLACEHOLDER] (missing mapping)
+
+4. **Revenue Calculations**:
+   - **Finance Revenue**: Uses `ggr` (like retail)
+   - **Trading Revenue**: Uses `gross_gaming_revenue_trading_cad` (Canada-specific)
+   - **Expected Revenue**: Full profit boost complexity (like US online)
+   - **Finance Expected**: Complex free bet + profit boost calculations
+
+=== PERFORMANCE OPTIMIZATIONS APPLIED ===
+
+1. **SARGable Conditions**:
+   - Changed: WHERE bl.bet_settled_date_local >= DATEADD(week, -2, TRUNC(SYSDATE))
+   - To: WHERE bl.bet_settled_date_local >= current_date() - INTERVAL 14 DAYS
+
+2. **JOIN Order Optimization**:
+   - Start with dates_canada (smallest table from SQL01)
+   - Apply main filters in JOIN condition for early filtering
+   - Move partition filter to JOIN condition
+
+3. **CASE Statement Optimization**:
+   - Consolidated multiple sport name conditions using IN clauses
+   - Removed redundant ILIKE functions where possible
+   - Used != instead of <> for consistency
+
+4. **Date Function Optimization**:
+   - Replaced DATEADD() with INTERVAL syntax
+   - Simplified timezone handling for Databricks
+
+5. **Complex Revenue Calculations**:
+   - Optimized profit boost calculations with proper NULLIF handling
+   - Simplified free bet logic with coalesce functions
+   - Removed unnecessary type casting (::REAL to CAST AS REAL)
+
+=== DATABRICKS-SPECIFIC FEATURES USED ===
+- GROUP BY ALL (Databricks-specific syntax)
+- INTERVAL syntax for date arithmetic
+- Delta Lake table references
+- Proper NULL handling with NULLIF()
+- CAST() instead of :: for type conversion
+- Optimized CASE structures
+
+=== EXECUTION DEPENDENCIES ===
+SQL04 requires these temporary views from SQL01:
+1. dates_canada - Used for filtering Canada sportsbook data (CRITICAL DEPENDENCY)
+2. Available but not used: dates_online, dates_retail, months_union
+
+=== RECOMMENDED NEXT STEPS ===
+1. Create indexes on frequently filtered columns:
+   - bl.bet_settled_date_local (partition column)
+   - bl.bet_status
+   - bl.bet_result
+   - bl.is_test_account
+
+2. Consider partitioning strategy:
+   - Partition by date (bet_settled_date_local)
+   - Z-ORDER by state, sport_name
+
+3. Apply OPTIMIZE command after data load:
+   OPTIMIZE sandbox.shared.br_temp_sbk_performance_canada
+   ZORDER BY (bet_settled_date_local, state, sport_name);
+
+4. Monitor query performance with EXPLAIN ANALYZE
+
+=== MIGRATION NOTES ===
+- Query now follows all AGENTS.md best practices
+- Removed LIMIT 1000 for production use
+- Added comprehensive comments for analyst maintainability
+- Optimized for Databricks Delta Lake performance
+- **CRITICAL**: SQL04 must be executed AFTER SQL01 (depends on dates_canada view)
+- Canada-specific business logic preserved and optimized
+- Full profit boost complexity maintained (like US online)
+- Ready for production deployment after missing table mappings are resolved
+
+=== BUSINESS LOGIC PRESERVED ===
+- Canada Online channel identification
+- SGP+ detection using sgpp_yn field
+- Free bet tracking with free_bet_used
+- Profit boost feature support
+- CAD trading revenue tracking
+- Test account filtering
+- Complex expected revenue calculations
+- BNN shrewd detection algorithms
+
+=== MISSING MAPPINGS TO RESOLVE ===
+1. **Sport Groupings**: Need mapping for analyst_rt.br_sb_groupings
+2. **Canada Risk Features**: Need mapping for analyst_rt.cl_fd_risk_features_can
+   - This may be a Canada-specific risk features table
+   - Could potentially use service.ml.cd_fd_risk_features_union if it includes Canada data
+   - Requires investigation of Canada risk data availability
+
+=== CANADA QUERY COMPLEXITY ===
+This query has the highest complexity due to:
+- Full profit boost calculations (like US online)
+- Complex free bet expected revenue logic
+- Separate CAD trading revenue tracking
+- Canada-specific field mappings (sgpp_yn, free_bet_used)
+- Missing Canada-specific risk features table

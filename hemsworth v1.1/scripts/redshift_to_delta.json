@@ -9936,7 +9936,7 @@
         "delta_table": "bet_legs",
         "delta_column": "igt_leg_price"
       },
-      "leg_price_decimal_usd": {
+      "leg_price_decimal": {
         "domain": "Sportsbook",
         "delta_catalog": "core_views",
         "delta_schema": "sportsbook",
@@ -10334,6 +10334,13 @@
         "delta_schema": "sportsbook",
         "delta_table": "bet_legs",
         "delta_column": "bonus_extra_account_type_id"
+      },
+      "geofence_name": {
+        "domain": "Sportsbook",
+        "delta_catalog": "core_views",
+        "delta_schema": "sportsbook",
+        "delta_table": "bet_legs",
+        "delta_column": "bet_geofence_name"
       }
     },
     "fact_sb_gameplay_can": {
@@ -10854,6 +10861,13 @@
         "delta_schema": "sportsbook_can",
         "delta_table": "bet_legs",
         "delta_column": "bonus_extra_account_type_id"
+      },
+      "geofence_name": {
+        "domain": "Sportsbook",
+        "delta_catalog": "core_views",
+        "delta_schema": "sportsbook_can",
+        "delta_table": "bet_legs",
+        "delta_column": "bet_geofence_name"
       }
     },
     "dim_sb_account_lifecycle": {
@@ -28990,7 +29004,7 @@
         "delta_catalog": "core_views",
         "delta_schema": "sportsbook_retail",
         "delta_table": "gameplay_legs",
-        "delta_column": "bet_placed_local_date"
+        "delta_column": "bet_placed_ts_local"
       },
       "state": {
         "domain": "Sportsbook Retail",
@@ -31176,6 +31190,99 @@
       },
       "clubhouse_account": {
         "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      }
+    },
+    "fact_aw_account_balance": {
+      "customer_id": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "product_account_id": {
+        "domain": "Financial",
+        "delta_catalog": "core_views",
+        "delta_schema": "financial",
+        "delta_table": "user_balances_history",
+        "delta_column": "fanduel_user_id"
+      },
+      "product_id": {
+        "domain": "Financial",
+        "delta_catalog": "core_views",
+        "delta_schema": "financial",
+        "delta_table": "user_balances_history",
+        "delta_column": "product_id"
+      },
+      "snapshot_date": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "balance": {
+        "domain": "Financial",
+        "delta_catalog": "core_views",
+        "delta_schema": "financial",
+        "delta_table": "user_balances_history",
+        "delta_column": "balance"
+      },
+      "description": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "dw_date": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "ledger_account_id": {
+        "domain": "Financial",
+        "delta_catalog": "core_views",
+        "delta_schema": "financial",
+        "delta_table": "user_balances_history",
+        "delta_column": "ledger_account_id"
+      },
+      "last_transaction_date": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "bonus_expiry_date": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "is_latest_snapshot": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "snapshot_imported_date": {
+        "domain": "Financial",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "ledger_line_id": {
+        "domain": "Financial",
         "delta_catalog": "",
         "delta_schema": "",
         "delta_table": "",
@@ -51546,6 +51653,164 @@
         "delta_schema": "account",
         "delta_table": "user_status_history",
         "delta_column": "last_withdrawal_method_before_user_status_change"
+      }
+    },
+    "casino_fvm_segment": {
+      "product_account_id": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "fanduel_user_id"
+      },
+      "customer_id": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "week_date": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "start_ts"
+      },
+      "fvm_value_tier": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "segment_value"
+      },
+      "fvm_intra_tier": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "fvm_30day_engr_prediction": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_predictions",
+        "delta_column": ""
+      },
+      "fvm_365days_engr_prediction": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_predictions",
+        "delta_column": ""
+      },
+      "game_preference": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "crm_brand": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "dw_date": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      }
+    },
+    "fact_sb_customer_segmentation_v2": {
+      "product_account_id": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "fanduel_user_id"
+      },
+      "segment_30d": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "segment_value"
+      },
+      "segment_365d": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "segment_value"
+      },
+      "report_date": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "start_ts"
+      },
+      "dw_date": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "max_seg": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "segment_30d_gp": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "segment_value"
+      },
+      "segment_365d_gp": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_segments",
+        "delta_column": "segment_value"
+      },
+      "max_seg_gp": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "egp_ratio": {
+        "domain": "Account",
+        "delta_catalog": "",
+        "delta_schema": "",
+        "delta_table": "",
+        "delta_column": ""
+      },
+      "predicted_engr_next_30": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_predictions",
+        "delta_column": ""
+      },
+      "predicted_engr_next_365": {
+        "domain": "Account",
+        "delta_catalog": "core_views",
+        "delta_schema": "segmentation",
+        "delta_table": "user_predictions",
+        "delta_column": ""
       }
     }
   },
